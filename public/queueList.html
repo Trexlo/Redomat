@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <link rel="manifest" href="./manifest.json" />
+    <title>Redomat</title>
+</head>
+<body>
+    <header class="header">
+        <h1>Redomat</h1>
+        <h3 id="menu-title">Stani u red</h2>
+    </header>
+    <div class="menu-box" id="queueList">
+        <button class="queue-button"  hidden id="queue-template"><span class="queue-name">red</span><span class="queue-number">0</span></button>
+    </div>
+</body>
+<script>
+
+    fetch("/queueList", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+    }).then(res=> res.json())
+    .then(data=>{
+        console.log(data);
+        
+        var qList = document.getElementById("queueList");
+        var qbtn = document.getElementById("queue-template");
+
+        data.queue.forEach(element => {
+            if(element.ownerId == data.myId) return;
+            var tmp = qbtn.cloneNode(true)
+            tmp.id = element.ownerId;
+            tmp.firstChild.textContent=element.ownerName;
+            var currNum = element.waiting.findIndex(x=>x.userId==data.myId)
+            if(currNum != -1){
+                tmp.lastChild.textContent=currNum+1;
+                tmp.lastChild.style.color = "green";
+                tmp.onclick = ()=>{
+                    window.location.assign('/queueNumber?id='+element.ownerId);
+                }
+            }else{
+                tmp.lastChild.textContent=element.waiting.length;
+                tmp.onclick = ()=>{
+                    fetch("/joinQueue", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Accept: "application/json",
+                        },
+                        body: JSON.stringify({ ownerId:element.ownerId }),
+                    }).then(res=> window.location.assign('/queueNumber?id='+element.ownerId));
+                }
+                
+            }
+            
+            tmp.hidden=false;
+            qList.append(tmp);
+
+        });
+    })
+
+
+</script>
+</html>

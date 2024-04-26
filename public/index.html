@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <link rel="manifest" href="./manifest.json" />
+
+    <title>Redomat</title>
+</head>
+<body>
+    <header class="header">
+        <h1>Redomat</h1>
+        <h3 id="menu-title">Obavijesti</h2>
+    </header>
+    <div class="menu-box" id="notifications">
+        <button id="notifications-btn">Uključi obavijesti</button>
+    </div>
+    <div class="menu-box" id="register">
+        <p>Tvoje ime</p>
+        <input type="text" id="name-input">
+        <button id="register-btn">U redu</button>
+    </div>
+    <div class="menu-box" id="menu">
+        <button disabled id="create-queue-button">Stvori red</button>
+        <a href="/queueList"><button id="join-queue-button">Uđi u red</button></a>
+    </div>
+    <script>
+        console.log("register");
+        console.log(navigator);
+        if ('serviceWorker' in navigator) {
+            console.log("has sw");
+            navigator.serviceWorker
+            .register("./sw.js", { type: "module" })
+            .then((reg) => console.log("SW registered!", reg))
+            .catch((err) =>
+                console.error("Error registering service worker", err)
+            );
+        }
+            fetch("/hasQueue", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            }).then(res=> res.json())
+            .then(data=>{
+                console.log(data);
+                var qbtn = document.getElementById("create-queue-button");
+                if(data.hasQueue){
+                    qbtn.textContent="Tvoj red";
+                    qbtn.onclick = ()=>{
+                        window.location.assign('/queue');
+                    }
+                }else{
+                    qbtn.textContent="Stvori red";
+                    qbtn.onclick = ()=>{
+
+                        fetch("/createQueue", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Accept: "application/json",
+                            },
+                        }).then(res=> window.location.assign('/queue'));
+
+                        
+                    }
+                }
+                qbtn.disabled = false;
+            })
+
+       
+        
+
+
+
+    </script>
+    <script src="menuControl.js" type="module"></script>
+</body>
+
+</html>
