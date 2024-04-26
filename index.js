@@ -108,10 +108,36 @@ app.get('*', async (req,res, next)=>{
     console.log("init storing subs");
     subscriptions = await getData("subscriptions")
     console.log(subscriptions);
+  }else{
+    console.log("subs exist");
+    console.log(subscriptions);
   }
   if(!queue){
     console.log("init storing queue");
     queue = await getData("queue")
+    console.log(queue);
+  }else{
+    console.log("queue exist");
+    console.log(queue);
+  }
+  next();
+})
+
+app.post('*', async (req,res, next)=>{
+  if(!subscriptions){
+    console.log("init storing subs");
+    subscriptions = await getData("subscriptions")
+    console.log(subscriptions);
+  }else{
+    console.log("subs exist");
+    console.log(subscriptions);
+  }
+  if(!queue){
+    console.log("init storing queue");
+    queue = await getData("queue")
+    console.log(queue);
+  }else{
+    console.log("queue exist");
     console.log(queue);
   }
   next();
