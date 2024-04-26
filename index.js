@@ -49,7 +49,7 @@ var session = require('express-session');
 
 const pg = require('pg');
 
-const pgSession = require('connect-pg-simple')(expressSession);
+const pgSession = require('connect-pg-simple')(session);
 
 const pgPool = new pg.Pool({
   connectionString: process.env.DBConfigLink,
