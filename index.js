@@ -14,6 +14,7 @@ const privateKey=process.env.PRIVATEKEY;
 const publicKey=process.env.PUBLICKEY;
 
 
+
 const config = {
   baseURL: process.env.APP_URL || `https://localhost:${PORT}`,
 };
@@ -33,26 +34,62 @@ if(!process.env.PORT){
 if(process.env.PORT)
   app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-var queue = JSON.parse(fs.readFileSync('./queue.json'));
+var queue = null; //JSON.parse(fs.readFileSync('./queue.json'));
 console.log(queue);
 
 const webpush = require('web-push');
 const SUBS_FILENAME = 'subscriptions.json';
-let subscriptions = [];
-try {
-    subscriptions = JSON.parse(fs.readFileSync(SUBS_FILENAME));
-    console.log(subscriptions);
-} catch (error) {
-    console.error(error);    
-}
+
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(cookieParser());
 var session = require('express-session');
-var FileStore = require('session-file-store')(session);
-var fileStoreOptions = {};
+// var FileStore = require('session-file-store')(session);
+// var fileStoreOptions = {};
+
+const pg = require('pg');
+
+const pgSession = require('connect-pg-simple')(expressSession);
+
+const pgPool = new pg.Pool({
+  connectionString: process.env.DBConfigLink,
+  ssl: {
+      rejectUnauthorized: false
+  }
+});
+pgPool.query(`
+CREATE TABLE IF NOT EXISTS queue (
+  id INTEGER DEFAULT 1
+  data JSON DEFAULT '[]'
+);
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id INTEGER DEFAULT 1
+  data JSON DEFAULT '[]'
+);
+
+`);
+
+function storeInto(table, data){
+  pgPool.query("UPDATE "+table+" SET data = $1 WHERE id = 1", [data]);
+}
+async function getData(table){
+  return await pgPool.query("SELECT * FROM "+table+" WHERE id = 1").rows[0].data;
+}
+
+let subscriptions = null;
+// try {
+//     subscriptions = JSON.parse(fs.readFileSync(SUBS_FILENAME));
+//     console.log(subscriptions);
+// } catch (error) {
+//     console.error(error);    
+// }
+
 app.use(session({
-  store: new FileStore(fileStoreOptions),
+  store: new pgSession({
+    pool: pgPool,                // Connection pool
+    tableName: 'user_sessions',   // Use another table-name than the default "session" one,
+    createTableIfMissing: true
+  }),
   secret: 'DkmwFUPvAgzQAAxxbREBeMeuFvlTtrqa',
   cookie: { maxAge: 30*(1000 * 60 * 60 * 24) },
 }
@@ -66,16 +103,25 @@ app.use(express.static(path.join(__dirname, 'public')))
   //za heroku
 
 
-// app.get('*', (req,res, next)=>{
-//   console.log(req.session);
-//   next();
-// })
+app.get('*', async (req,res, next)=>{
+  if(!subscriptions){
+    console.log("init storing subs");
+    subscriptions = await getData("subscriptions")
+    console.log(subscriptions);
+  }
+  if(!queue){
+    console.log("init storing queue");
+    queue = await getData("queue")
+    console.log(queue);
+  }
+  next();
+})
 // app.get('/notifications', (req,res) => {
 //       res.sendFile(path.join(__dirname, "public", "notifications.html"));
 // });
 
 
-app.get('/', (req,res) => {
+app.get('/', async (req,res) => {
     console.log(req.session);
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -91,7 +137,8 @@ app.post('/next', (req,res) => {
     }else{
       q.current = q.waiting[0];
     }
-    fs.writeFileSync('./queue.json',JSON.stringify(queue));
+    storeInto("queue", JSON.stringify(queue));
+    //fs.writeFileSync('./queue.json',JSON.stringify(queue));
     if(q.current)
       sendPushNotifications(q.current.userId, q.ownerName)
   }
@@ -104,7 +151,8 @@ app.post("/saveSubscription", function(req, res) {
   req.session.notificationsOn = true;
   let sub = {user:req.session.id, sub: req.body.sub};
   subscriptions.push(sub);
-  fs.writeFileSync(SUBS_FILENAME, JSON.stringify(subscriptions));
+  //fs.writeFileSync(SUBS_FILENAME, JSON.stringify(subscriptions));
+  storeInto("subscriptions", JSON.stringify(subscriptions));
   res.json({
       success: true
   });
@@ -116,7 +164,8 @@ app.post("/hasQueue", function(req, res) {
 });
 app.post("/createQueue", function(req, res) {
   queue.push({ownerId: req.session.id, ownerName: req.session.username, waiting:[], current:null});
-  fs.writeFileSync('./queue.json',JSON.stringify(queue));
+  storeInto("queue", JSON.stringify(queue));
+  // fs.writeFileSync('./queue.json',JSON.stringify(queue));
   res.json({
       success: queue.findIndex(q=> q.ownerId == req.session.id) != -1
   });
@@ -124,7 +173,8 @@ app.post("/createQueue", function(req, res) {
 app.post("/joinQueue", function(req, res) {
   if(queue.find(q=>q.ownerId == req.body.ownerId) && !queue.find(q=>q.ownerId == req.body.ownerId).waiting.find(u=> u.userId == req.session.id)){
     queue.find(q=>q.ownerId == req.body.ownerId).waiting.push({userId: req.session.id, userName: req.session.username});
-    fs.writeFileSync('./queue.json',JSON.stringify(queue));
+    storeInto("queue", JSON.stringify(queue));
+    // fs.writeFileSync('./queue.json',JSON.stringify(queue));
     sendPushNotificationsQueue(req.body.ownerId, req.session.username);
   }
   res.json({
