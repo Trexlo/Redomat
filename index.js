@@ -73,7 +73,7 @@ function storeInto(table, data){
   pgPool.query("UPDATE "+table+" SET data = $1 WHERE id = 1", [data]);
 }
 async function getData(table){
-  return await pgPool.query("SELECT * FROM "+table+" WHERE id = 1").rows[0].data;
+  return (await pgPool.query("SELECT * FROM "+table+" WHERE id = 1")).rows[0].data;
 }
 
 let subscriptions = null;
