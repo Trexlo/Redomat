@@ -35,6 +35,7 @@
         data.queue.forEach(element => {
             if(element.ownerId == data.myId) return;
             var tmp = qbtn.cloneNode(true)
+            tmp.style.display = "";
             tmp.id = element.ownerId;
             tmp.firstChild.textContent=element.ownerName;
             var currNum = element.waiting.findIndex(x=>x.userId==data.myId)
