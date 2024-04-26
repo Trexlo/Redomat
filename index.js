@@ -59,11 +59,11 @@ const pgPool = new pg.Pool({
 });
 pgPool.query(`
 CREATE TABLE IF NOT EXISTS queue (
-  id INTEGER DEFAULT 1
+  id INTEGER DEFAULT 1,
   data JSON DEFAULT '[]'
 );
 CREATE TABLE IF NOT EXISTS subscriptions (
-  id INTEGER DEFAULT 1
+  id INTEGER DEFAULT 1,
   data JSON DEFAULT '[]'
 );
 
