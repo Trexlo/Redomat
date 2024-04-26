@@ -107,18 +107,18 @@ app.get('*', async (req,res, next)=>{
   if(!subscriptions){
     console.log("init storing subs");
     subscriptions = await getData("subscriptions")
-    console.log(subscriptions);
+    //console.log(subscriptions);
   }else{
     console.log("subs exist");
-    console.log(subscriptions);
+    //console.log(subscriptions);
   }
   if(!queue){
     console.log("init storing queue");
     queue = await getData("queue")
-    console.log(queue);
+    //console.log(queue);
   }else{
     console.log("queue exist");
-    console.log(queue);
+    //console.log(queue);
   }
   next();
 })
@@ -127,18 +127,18 @@ app.post('*', async (req,res, next)=>{
   if(!subscriptions){
     console.log("init storing subs");
     subscriptions = await getData("subscriptions")
-    console.log(subscriptions);
+    //console.log(subscriptions);
   }else{
     console.log("subs exist");
-    console.log(subscriptions);
+    //console.log(subscriptions);
   }
   if(!queue){
     console.log("init storing queue");
     queue = await getData("queue")
-    console.log(queue);
+    //console.log(queue);
   }else{
     console.log("queue exist");
-    console.log(queue);
+    //console.log(queue);
   }
   next();
 })
@@ -148,14 +148,14 @@ app.post('*', async (req,res, next)=>{
 
 
 app.get('/', async (req,res) => {
-    console.log(req.session);
+    //console.log(req.session);
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
   
 app.post('/next', (req,res) => {
   console.log("next");
   var q = queue.find(q=>q.ownerId == req.session.id);
-  console.log(q);
+  //console.log(q);
   if(q && q.waiting.length != 0){
     if(q.current){
       q.waiting.shift();
@@ -168,12 +168,12 @@ app.post('/next', (req,res) => {
     if(q.current)
       sendPushNotifications(q.current.userId, q.ownerName)
   }
-  console.log(q);
+  //console.log(q);
 
   res.sendStatus(200);
 });
 app.post("/saveSubscription", function(req, res) {
-  console.log(req.body);
+  //console.log(req.body);
   req.session.notificationsOn = true;
   let sub = {user:req.session.id, sub: req.body.sub};
   subscriptions.push(sub);
@@ -208,7 +208,7 @@ app.post("/joinQueue", function(req, res) {
   });
 });
 app.post("/register", function(req, res) {
-  console.log(req.body);
+  //console.log(req.body);
   req.session.username = req.body.name;
   res.json({
       success: true
@@ -229,7 +229,7 @@ app.get('/queueList', (req,res) => {
 });
 [].map
 app.post('/queueList', (req,res) => {
-  console.log(queue);
+  //console.log(queue);
   res.json({
     myId: req.session.id,
     queue: queue
@@ -240,8 +240,8 @@ app.get('/queueNumber', (req,res) => {
   res.sendFile(path.join(__dirname, "public", "queueNumber.html"));
 });
 app.post('/queueNumber', (req,res) => {
-  console.log(queue);
-  console.log( req);
+  //console.log(queue);
+  //console.log( req);
   if(queue.find(q=>q.ownerId == req.query.id) && queue.find(q=>q.ownerId == req.query.id).waiting.find(u=> u.userId == req.session.id)){
     console.log("found");
     res.json({
@@ -254,37 +254,19 @@ app.post('/queueNumber', (req,res) => {
     });
   }
 });
-// app.get('/images', (req,res) => {
-//   console.log("get");
-// });
-// app.get('/gallery', (req,res) => {
-//     res.sendFile(path.join(__dirname, "public", "gallery.html"));
-// });
-// app.get('/iwas', (req,res) => {
-//     res.sendFile(path.join(__dirname, "public", "iwas.html"));
-// });
-
-// app.get('/gallery', (req,res) => {
-//   res.sendFile(path.join(__dirname, "public", "gallery.html"));
-// });
-// app.get('/iwas', (req,res) => {
-//   res.sendFile(path.join(__dirname, "public", "iwas.html"));
-// });
 
 
-// const vapidKeys = webpush.generateVAPIDKeys();
-// console.log(vapidKeys)
 
 async function sendPushNotifications(user, sender) {
     webpush.setVapidDetails('mailto:'+process.env.EMAIL, 
     publicKey,
     privateKey);
     console.log("sending");
-    console.log(user);
-    console.log(sender);
-    console.log(subscriptions);
+    //console.log(user);
+    //console.log(sender);
+    //console.log(subscriptions);
     subscriptions.forEach(async sub => {
-      console.log(sub);
+      //console.log(sub);
 
       if(sub.user == user){
         try {
@@ -298,18 +280,8 @@ async function sendPushNotifications(user, sender) {
             console.error(error);
         }
       }
-      // else{
-      //   try {
-      //     console.log("Sending notif to", sub);
-      //     await webpush.sendNotification(sub, JSON.stringify({
-      //         title: 'Somebody uploaded an image!',
-      //         body: 'You can check it out on the map.',
-      //         redirectUrl: '/index.html'
-      //       }));    
-      //   } catch (error) {
-      //       console.error(error);
-      //   }
-      //}
+
+
         
     });
 }
@@ -318,9 +290,9 @@ async function sendPushNotificationsQueue(user, sender) {
   publicKey,
   privateKey);
   console.log("sending");
-  console.log(user);
-  console.log(sender);
-  console.log(subscriptions);
+  //console.log(user);
+  //console.log(sender);
+  //console.log(subscriptions);
   subscriptions.forEach(async sub => {
     console.log(sub);
 
@@ -336,18 +308,6 @@ async function sendPushNotificationsQueue(user, sender) {
           console.error(error);
       }
     }
-    // else{
-    //   try {
-    //     console.log("Sending notif to", sub);
-    //     await webpush.sendNotification(sub, JSON.stringify({
-    //         title: 'Somebody uploaded an image!',
-    //         body: 'You can check it out on the map.',
-    //         redirectUrl: '/index.html'
-    //       }));    
-    //   } catch (error) {
-    //       console.error(error);
-    //   }
-    //}
-      
+
   });
 }

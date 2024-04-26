@@ -141,3 +141,6 @@ body{
     margin:auto auto;
     width: 20%;
 }
+#queue-template{
+    display: none;
+}
