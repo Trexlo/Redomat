@@ -43,7 +43,7 @@
                 tmp.lastChild.textContent=currNum+1;
                 tmp.lastChild.style.color = "green";
                 tmp.onclick = ()=>{
-                    window.location.assign('/queueNumber?id='+element.ownerId);
+                    window.location.assign('/user/queueNumber?id='+element.ownerId);
                 }
             }else{
                 tmp.lastChild.textContent=element.waiting.length;
@@ -55,7 +55,7 @@
                             Accept: "application/json",
                         },
                         body: JSON.stringify({ ownerId:element.ownerId }),
-                    }).then(res=> window.location.assign('/queueNumber?id='+element.ownerId));
+                    }).then(res=> window.location.assign('/user/queueNumber?id='+element.ownerId));
                 }
                 
             }

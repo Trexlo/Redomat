@@ -275,7 +275,21 @@ app.post('/queueNumber', (req,res) => {
     });
   }
 });
-
+app.post('/user/queueNumber', (req,res) => {
+  //console.log(queue);
+  //console.log( req);
+  if(queue.find(q=>q.ownerId == req.query.id) && queue.find(q=>q.ownerId == req.query.id).waiting.find(u=> u.userId == req.session.id)){
+    console.log("found");
+    res.json({
+      number: queue.find(q=>q.ownerId == req.query.id).waiting.findIndex(u=> u.userId == req.session.id)+1
+    });
+  } else{
+    console.log("else");
+    res.json({
+      number: -1
+    });
+  }
+});
 
 
 async function sendPushNotifications(user, sender) {
