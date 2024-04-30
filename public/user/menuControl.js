@@ -59,7 +59,8 @@ navigator.serviceWorker.ready.then(reg=>{
 })
 
 if ("Notification" in window && "serviceWorker" in navigator) {
-    console.log("no subscription");
+    
+    console.log(Notification);
     notificationsButton.addEventListener("click", function () {
         Notification.requestPermission(async function (res) {
             console.log("Request permission result:", res);
@@ -75,7 +76,6 @@ if ("Notification" in window && "serviceWorker" in navigator) {
         });
     });
 } else {
-    console.log("has subscription");
     notificationsButton.disabled=true;
 }
 
