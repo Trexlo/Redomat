@@ -132,7 +132,6 @@ async function setupPushSubscription() {
 
 async function switchMenu(menu, back=false){
     console.log("switching to "+menu);
-    if(menu == "notifications")return;
 
         if(back){
             await set("prevStates", (await get("prevStates")).slice(1) );
