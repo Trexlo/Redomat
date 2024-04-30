@@ -41,7 +41,7 @@ async function onLoad(){
    
         var currState= await get("state");
         console.log(currState);
-        if(currState){
+        if(currState ){
            document.getElementById(currState).style.display="flex";
         }else document.getElementById("notifications").style.display="flex";
 }
@@ -54,13 +54,14 @@ navigator.serviceWorker.ready.then(reg=>{
             notifications.style.display="none";
             // notifications.className="active";
             // notifications.innerText="You are subscribed";
+        }else{
+            switchMenu("notifications");
         }
     });
 })
 
 if ("Notification" in window && "serviceWorker" in navigator) {
     
-    console.log(Notification);
     notificationsButton.addEventListener("click", function () {
         Notification.requestPermission(async function (res) {
             console.log("Request permission result:", res);
@@ -150,7 +151,7 @@ async function switchMenu(menu, back=false){
             document.getElementById((await get("prevStates"))[0]).style.display="none";
         document.getElementById(await get("state")).style.display="flex";
         switch (menu) {
-            // case "notifications":menuTitle.textContent="Obavijesti";break;
+            case "notifications":menuTitle.textContent="Obavijesti";break;
             case "register":menuTitle.textContent="Registracija";break;
             case "menu":menuTitle.textContent="Izbornik";break;
             // case "queue":menuTitle.textContent="Vaš red";break;

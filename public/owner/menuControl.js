@@ -54,6 +54,8 @@ navigator.serviceWorker.ready.then(reg=>{
             notifications.style.display="none";
             // notifications.className="active";
             // notifications.innerText="You are subscribed";
+        }else{
+            switchMenu("notifications");
         }
     });
 })
