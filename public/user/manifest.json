@@ -1,7 +1,7 @@
 {
-    "name": "Redomat",
-    "short_name": "Redomat",
-    "description": "Redomat",
+    "name": "Redomat-User",
+    "short_name": "Redomat-User",
+    "description": "Redomat for users",
     "display_override": ["standalone","minimal-ui"],
     "display": "fullscreen",  
     "theme_color": "black",

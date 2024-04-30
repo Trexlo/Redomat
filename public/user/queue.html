@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../stylesheets/index.css">
+    <link rel="manifest" href="./manifest.json" />
+    <title>Redomat</title>
+</head>
+<body>
+    <header class="header">
+        <h1>Redomat</h1>
+        <h3 id="menu-title">Vaš red</h2>
+    </header>
+    <div class="menu-box" id="queue">
+        <p>Trenutno: <span id="current-name"></span></p>
+        <button id="next-button">Sljedeći</button>
+        <div id="name-list">
+            <p hidden class="name" id="name-template"></p>
+        </div>
+    </div>
+</body>
+<script>
+    var nxtButton= document.getElementById("next-button");
+    var current= document.getElementById("current-name");
+    var template= document.getElementById("name-template");
+    var nameList= document.getElementById("name-list");
+    fetch("/queue", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+        },
+    }).then(res=> res.json())
+    .then(data=>{
+        
+        if(data.queue.current){
+            current.textContent = data.queue.current.userName;
+            data.queue.waiting.shift();
+        }else 
+            current.textContent = "Nitko";
+
+        data.queue.waiting.forEach(w => {
+            var tmp = template.cloneNode(true)
+            tmp.id = w.userId;
+            tmp.textContent=w.userName;
+            tmp.hidden=false;
+            nameList.append(tmp);
+        });
+        if(data.queue.waiting.length==0 && !data.queue.current){
+            nxtButton.disabled = true;
+        }
+        if(data.queue.waiting.length==0 && data.queue.current){
+            nxtButton.disabled = false;
+            nxtButton.textContent = "Otpusti";
+        }
+    })
+    nxtButton.onclick = ()=>{
+            fetch("/next", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+        }).then(res=> window.location.reload());
+    }
+</script>
+</html>

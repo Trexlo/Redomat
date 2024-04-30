@@ -214,6 +214,18 @@ app.post("/register", function(req, res) {
       success: true
   });
 });
+app.post("/registerOwner", function(req, res) {
+  //console.log(req.body);
+  req.session.username = req.body.name;
+  if(queue.findIndex(q=> q.ownerId == req.session.id) == -1){
+    queue.push({ownerId: req.session.id, ownerName: req.session.username, waiting:[], current:null});
+    storeInto("queue", JSON.stringify(queue));
+    // fs.writeFileSync('./queue.json',JSON.stringify(queue));
+  }
+  res.json({
+      success: queue.findIndex(q=> q.ownerId == req.session.id) != -1
+  });
+});
 app.get('/queue', (req,res) => {
     res.sendFile(path.join(__dirname, "public", "queue.html"));
 });
