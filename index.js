@@ -229,6 +229,9 @@ app.post("/registerOwner", function(req, res) {
 app.get('/queue', (req,res) => {
     res.sendFile(path.join(__dirname, "public", "queue.html"));
 });
+app.get('/owner/queue', (req,res) => {
+  res.sendFile(path.join(__dirname, "public", "owner/queue.html"));
+});
 app.post('/queue', (req,res) => {
 
   res.json({
@@ -238,6 +241,9 @@ app.post('/queue', (req,res) => {
 });
 app.get('/queueList', (req,res) => {
   res.sendFile(path.join(__dirname, "public", "queueList.html"));
+});
+app.get('/user/queueList', (req,res) => {
+  res.sendFile(path.join(__dirname, "public", "user/queueList.html"));
 });
 [].map
 app.post('/queueList', (req,res) => {
@@ -250,6 +256,9 @@ app.post('/queueList', (req,res) => {
 
 app.get('/queueNumber', (req,res) => {
   res.sendFile(path.join(__dirname, "public", "queueNumber.html"));
+});
+app.get('/user/queueNumber', (req,res) => {
+  res.sendFile(path.join(__dirname, "public", "user/queueNumber.html"));
 });
 app.post('/queueNumber', (req,res) => {
   //console.log(queue);
