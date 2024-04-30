@@ -23,7 +23,7 @@
         <button id="register-btn">U redu</button>
     </div>
     <div class="menu-box" id="menu">
-        <button disabled id="create-queue-button">Stvori red</button>
+        <button disabled id="create-queue-button">Tvoj red</button>
     </div>
     <script>
         console.log("register");
@@ -47,26 +47,26 @@
             .then(data=>{
                 console.log(data);
                 var qbtn = document.getElementById("create-queue-button");
-                if(data.hasQueue){
-                    qbtn.textContent="Tvoj red";
-                    qbtn.onclick = ()=>{
-                        window.location.assign('./queue');
-                    }
-                }else{
-                    qbtn.textContent="Stvori red";
-                    qbtn.onclick = ()=>{
+                // if(data.hasQueue){
+                qbtn.textContent="Tvoj red";
+                qbtn.onclick = ()=>{
+                    window.location.assign('./queue');
+                }
+                // }else{
+                //     qbtn.textContent="Stvori red";
+                //     qbtn.onclick = ()=>{
 
-                        fetch("/createQueue", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                Accept: "application/json",
-                            },
-                        }).then(res=> window.location.assign('./queue'));
+                //         fetch("/createQueue", {
+                //             method: "POST",
+                //             headers: {
+                //                 "Content-Type": "application/json",
+                //                 Accept: "application/json",
+                //             },
+                //         }).then(res=> window.location.assign('./queue'));
 
                         
-                    }
-                }
+                //     }
+                // }
                 qbtn.disabled = false;
             })
 
