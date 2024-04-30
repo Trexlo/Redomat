@@ -132,8 +132,8 @@ self.addEventListener("push", function (event) {
     })
     var options = {
         body: data.body,
-        icon: "assets/img/android/android-launchericon-96-96.png",
-        badge: "assets/img/android/android-launchericon-96-96.png",
+        icon: "/img/android/android-launchericon-96-96.png",
+        badge: "/img/android/android-launchericon-96-96.png",
         vibrate: [200, 100, 200, 100, 200, 100, 200],
         data: {
             redirectUrl: data.redirectUrl,

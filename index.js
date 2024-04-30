@@ -309,7 +309,7 @@ async function sendPushNotifications(user, sender) {
           await webpush.sendNotification(sub.sub, JSON.stringify({
               title: 'Na redu ste kod '+sender+'!',
               body: sender+' vas očekuje.',
-              redirectUrl: '/queueNumber?id='+user
+              redirectUrl: '/user/queueNumber?id='+user
             }));    
         } catch (error) {
             console.error(error);
@@ -337,7 +337,7 @@ async function sendPushNotificationsQueue(user, sender) {
         await webpush.sendNotification(sub.sub, JSON.stringify({
             title: sender+ ' čeka u redu!',
             body: "",
-            redirectUrl: '/queue'
+            redirectUrl: '/owner/queue'
           }));    
       } catch (error) {
           console.error(error);
