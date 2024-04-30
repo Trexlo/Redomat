@@ -166,7 +166,7 @@ app.post('/next', (req,res) => {
     storeInto("queue", JSON.stringify(queue));
     //fs.writeFileSync('./queue.json',JSON.stringify(queue));
     if(q.current)
-      sendPushNotifications(q.current.userId, q.ownerName)
+      sendPushNotifications(q.current.userId, q.ownerName, q.ownerId)
   }
   //console.log(q);
 
@@ -292,7 +292,7 @@ app.post('/user/queueNumber', (req,res) => {
 });
 
 
-async function sendPushNotifications(user, sender) {
+async function sendPushNotifications(user, sender, senderId) {
     webpush.setVapidDetails('mailto:'+process.env.EMAIL, 
     publicKey,
     privateKey);
@@ -309,7 +309,7 @@ async function sendPushNotifications(user, sender) {
           await webpush.sendNotification(sub.sub, JSON.stringify({
               title: 'Na redu ste kod '+sender+'!',
               body: sender+' vas očekuje.',
-              redirectUrl: '/user/queueNumber?id='+user
+              redirectUrl: '/user/queueNumber?id='+senderId
             }));    
         } catch (error) {
             console.error(error);
